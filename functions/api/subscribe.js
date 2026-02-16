@@ -10,21 +10,36 @@ export async function onRequestPost({ request, env }) {
             return new Response("Email is required", { status: 400 });
         }
 
-        // Insert into D1 Database
-        // Note: 'DB' matches the binding name in wrangler.jsonc
-        const info = await env.DB.prepare(
-            "INSERT INTO subscribers (email, channel, marketing_consent, created_at) VALUES (?, ?, ?, ?)"
-        )
-            .bind(email, channel, marketingConsent ? 1 : 0, new Date().toISOString())
-            .run();
+        const supabaseUrl = env.SUPABASE_URL;
+        const supabaseKey = env.SUPABASE_KEY;
 
-        if (info.success) {
-            // Redirect to a thank you page or show success message
+        if (!supabaseUrl || !supabaseKey) {
+            return new Response("Supabase configuration missing", { status: 500 });
+        }
+
+        // Insert into Supabase 'subscribers' table via REST API
+        const response = await fetch(`${supabaseUrl}/rest/v1/subscribers`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": supabaseKey,
+                "Authorization": `Bearer ${supabaseKey}`,
+                "Prefer": "return=minimal", // Don't return the inserted row to save bandwidth
+            },
+            body: JSON.stringify({
+                email: email,
+                channel: channel,
+                marketing_consent: marketingConsent,
+            }),
+        });
+
+        if (response.ok) {
             return new Response("구독이 완료되었습니다! 감사합니다. 🍊", {
                 headers: { "Content-Type": "text/html; charset=utf-8" },
             });
         } else {
-            return new Response("Database Error", { status: 500 });
+            const errorText = await response.text();
+            return new Response(`Database Error: ${errorText}`, { status: 500 });
         }
     } catch (e) {
         return new Response(`Error: ${e.message}`, { status: 500 });
