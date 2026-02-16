@@ -44,6 +44,12 @@ export default {
                     });
                 } else {
                     const errorText = await response.text();
+                    // Handle Duplicate Email Error (Postgres Code 23505)
+                    if (errorText.includes("23505") || errorText.includes("subscribers_email_key")) {
+                        return new Response("이미 구독 중인 이메일입니다! 🍊", {
+                            headers: { "Content-Type": "text/html; charset=utf-8" },
+                        });
+                    }
                     return new Response(`Database Error: ${errorText}`, { status: 500 });
                 }
             } catch (e) {
