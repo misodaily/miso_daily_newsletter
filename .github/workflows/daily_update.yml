@@ -40,7 +40,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/ data/
+          git add public/
           git diff --cached --quiet || {
             git commit -m "chore: daily newsletter update $(date +%Y-%m-%d)"
             git push

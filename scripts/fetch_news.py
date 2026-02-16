@@ -156,17 +156,8 @@ def main():
     client_id = os.environ.get("X_NAVER_CLIENT_ID", "")
     client_secret = os.environ.get("X_NAVER_CLIENT_SECRET", "")
 
-    print(f"DEBUG: Checking environment variables...")
-    print(f"DEBUG: X_NAVER_CLIENT_ID present: {bool(client_id)}")
-    print(f"DEBUG: X_NAVER_CLIENT_SECRET present: {bool(client_secret)}")
-    
-    if client_id:
-        print(f"DEBUG: X_NAVER_CLIENT_ID length: {len(client_id)}")
-        print(f"DEBUG: X_NAVER_CLIENT_ID starts with: {client_id[:2]}***")
-
     if not client_id or not client_secret:
         print("❌ X_NAVER_CLIENT_ID / X_NAVER_CLIENT_SECRET 환경변수가 설정되지 않았습니다.")
-        print("💡 GitHub Repo > Settings > Secrets and variables > Actions > Repository secrets 에 등록되었는지 확인해주세요.")
         sys.exit(1)
 
     data = fetch_all(client_id, client_secret)
