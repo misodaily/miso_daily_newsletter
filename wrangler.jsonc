@@ -1,7 +1,9 @@
 {
   "name": "misodailynewsletter",
   "compatibility_date": "2026-02-12",
+  "main": "src/worker.js",
   "assets": {
-    "directory": "./public"
+    "directory": "./public",
+    "binding": "ASSETS"
   }
 }
