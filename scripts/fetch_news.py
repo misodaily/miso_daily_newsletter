@@ -71,19 +71,6 @@ def clean_html(text: str) -> str:
     return re.sub(r"<[^>]+>", "", text).strip()
 
 
-def extract_original_link(item: dict) -> str:
-    """링크를 추출합니다. 안정성을 위해 news.naver.com 링크를 우선합니다."""
-    link = item.get("link", "")
-    originallink = item.get("originallink", "")
-
-    # news.naver.com 링크가 있으면 가장 신뢰할 수 있음 (네이버 뉴스 판)
-    if "news.naver.com" in link:
-        return link
-    
-    # 없으면 언론사 원문 링크 사용
-    return originallink or link
-
-
 def is_yesterday(link: str, pub_date_str: str, yesterday: str) -> bool:
     """기사가 전일자인지 확인합니다 (URL 패턴 + pubDate)."""
     ymd = yesterday.replace("-", "")  # 20260216
@@ -114,6 +101,7 @@ def fetch_all(client_id: str, client_secret: str) -> dict:
     for cat in CATEGORIES:
         articles = []
         seen_urls = set()
+        seen_links = set() # Changed from seen_urls to seen_links
 
         for query in cat["queries"]:
             try:
@@ -122,23 +110,41 @@ def fetch_all(client_id: str, client_secret: str) -> dict:
                 print(f"  ⚠ 검색 실패 ({query}): {e}")
                 continue
 
+            # Process items from the search result
+            filtered_items = []
             for item in items:
-                link = extract_original_link(item)
-                if not link or link in seen_urls:
-                    continue
-
-                if not is_yesterday(link, item.get("pubDate", ""), yesterday):
-                    continue
-
                 title = clean_html(item.get("title", ""))
                 if not title:
                     continue
 
-                seen_urls.add(link)
-                articles.append({"title": title, "url": link})
+                # 🚀 [변경] 네이버 뉴스(news.naver.com) 링크만 수집합니다.
+                # 외부 언론사 사이트는 링크가 죽거나(404), 리다이렉트 되는 경우가 많아 제외합니다.
+                link = item.get("link", "")
+                if "news.naver.com" not in link:
+                    continue
 
+                # 날짜 필터링 (전일자)
+                pub_date_str = item.get("pubDate", "")
+                if not is_yesterday(link, pub_date_str, yesterday): # Pass link to is_yesterday
+                    continue
+                
+                # 중복 제거
+                if link in seen_links:
+                    continue
+                seen_links.add(link)
+
+                filtered_items.append({
+                    "title": title,
+                    "url": link,  # news.naver.com 링크 (changed from 'link' to 'url' to match original structure)
+                    # "pubDate": pub_date_str, # Not needed in final articles list
+                    # "description": clean_html(item.get("description", "")) # Not needed in final articles list
+                })
+            
+            # Add filtered items to articles, respecting max_articles
+            for article_item in filtered_items:
                 if len(articles) >= cat["max_articles"]:
                     break
+                articles.append(article_item)
 
             if len(articles) >= cat["max_articles"]:
                 break
