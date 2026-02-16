@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Miso Daily | 주식 카테고리 뉴스레터</title>
+</head>
+
+<body
+    style="margin:0;padding:0;background:#ececec;font-family:'Apple SD Gothic Neo','Noto Sans KR',Arial,sans-serif;color:#1f1f1f;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+        style="background:#ececec;padding:24px 0;">
+        <tr>
+            <td align="center">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="680"
+                    style="width:680px;max-width:680px;background:#f7f7f7;border:1px solid #dddddd;border-radius:12px;overflow:hidden;">
+                    <tr>
+                        <td style="padding:26px 28px 18px 28px;text-align:center;background:#D35400;">
+                            <p
+                                style="margin:0 0 10px 0;font-size:12px;color:#1a1a1a;font-weight:700;letter-spacing:0.6px;">
+                                MARKET
+                                LETTER</p>
+                            <h1
+                                style="margin:0;font-size:62px;line-height:1;font-weight:700;letter-spacing:6px;color:#111;font-family:Georgia,'Times New Roman',serif;">
+                                M I S O
+                            </h1>
+                            <p
+                                style="margin:8px 0 0 0;font-size:48px;line-height:1;color:#111;font-family:Georgia,'Times New Roman',serif;">
+                                daily</p>
+                        </td>
+                    </tr>
+
+                    <!-- 출석체크 -->
+                    <tr>
+                        <td style="padding:12px 28px 8px 28px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+                                style="background:#fff3eb;border:1px solid #ffd8bf;border-radius:10px;">
+                                <tr>
+                                    <td style="padding:12px;">
+                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+                                            width="100%">
+                                            <tr>
+                                                <td>
+                                                    <table role="presentation" cellpadding="0" cellspacing="0"
+                                                        border="0" width="100%">
+                                                        <tr>
+                                                            {% for day in attendance %}
+                                                            <td style="width:20%;padding:0 3px;">
+                                                                {% if day.checked %}
+                                                                <span
+                                                                    style="display:block;text-align:center;padding:6px 0;background:#111;color:#fff;border-radius:7px;font-size:11px;">{{
+                                                                    day.name }} ✅</span>
+                                                                {% else %}
+                                                                <span
+                                                                    style="display:block;text-align:center;padding:6px 0;background:#fff;border:1px dashed #bfa391;color:#7d634f;border-radius:7px;font-size:11px;">{{
+                                                                    day.name }} ⬜</span>
+                                                                {% endif %}
+                                                            </td>
+                                                            {% endfor %}
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- 날짜 및 헤드라인 -->
+                    <tr>
+                        <td style="padding:8px 28px 4px 28px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+                                style="background:#ffffff;border:1px solid #e5e5e5;border-radius:10px;">
+                                <tr>
+                                    <td style="padding:16px 18px;">
+                                        <p style="margin:0 0 6px 0;font-size:13px;color:#666;">{{ today_display }}</p>
+                                        <p style="margin:0 0 6px 0;font-size:12px;color:#D35400;font-weight:700;">소싱 기준:
+                                            {{ yesterday_display }}(어제) 국내
+                                            주요 경제 뉴스</p>
+                                        <p style="margin:0;font-size:16px;line-height:1.55;font-weight:700;color:#111;">
+                                            오늘의 핵심: <span style="color:#D35400;">{{ headline }}</span>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- 시장 브리핑 -->
+                    <tr>
+                        <td style="padding:18px 28px 0 28px;">
+                            <p
+                                style="margin:0 0 10px 0;display:inline-block;padding:6px 10px;background:#fff1e7;border:1px solid #ffd2b8;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:0.5px;color:#D35400;">
+                                시장 브리핑</p>
+                            <ul style="margin:0 0 0 16px;padding:0;font-size:14px;line-height:1.8;color:#222;">
+                                {% for point in briefing_points %}
+                                <li>{{ point }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+
+                    <!-- TODAY INSIGHT -->
+                    <tr>
+                        <td style="padding:14px 28px 0 28px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+                                style="background:#ffffff;border:1px solid #ededed;border-left:4px solid #D35400;border-radius:10px;">
+                                <tr>
+                                    <td style="padding:12px 14px;">
+                                        <p
+                                            style="margin:0 0 4px 0;font-size:12px;color:#D35400;font-weight:800;letter-spacing:0.4px;">
+                                            TODAY
+                                            INSIGHT</p>
+                                        <p style="margin:0;font-size:14px;line-height:1.7;color:#333;">{{ today_insight
+                                            }}</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- 뉴스 카테고리 -->
+                    {% for cat in categories %}
+                    <tr>
+                        <td style="padding:18px 28px {% if loop.last %}16px{% else %}0{% endif %} 28px;">
+                            <p
+                                style="margin:0 0 10px 0;display:inline-block;padding:6px 10px;background:#fff1e7;border:1px solid #ffd2b8;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:0.5px;color:#D35400;">
+                                {{ cat.label }}</p>
+                            {% if cat.articles %}
+                            <ul style="margin:0 0 0 16px;padding:0;font-size:14px;line-height:1.8;">
+                                {% for article in cat.articles %}
+                                <li><a href="{{ article.url }}" target="_blank" rel="noopener noreferrer"
+                                        style="color:#1f1f1f;text-decoration:underline;">{{ article.title }}</a></li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p style="margin:0 0 0 16px;font-size:13px;color:#999;">해당 카테고리의 전일자 뉴스가 없습니다.</p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    <!-- CTA + 면책 -->
+                    <tr>
+                        <td style="padding:10px 28px 28px 28px;text-align:center;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+                                style="margin:0 auto;">
+                                <tr>
+                                    <td style="background:#D35400;border-radius:999px;">
+                                        <a href="subscribe_miso_daily.html" target="_blank" rel="noopener noreferrer"
+                                            style="display:inline-block;padding:12px 26px;font-size:14px;font-weight:700;color:#fff;text-decoration:none;">
+                                            구독 계속하기
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p style="margin:14px 0 0 0;font-size:12px;color:#777;line-height:1.6;">
+                                Miso Daily는 투자 판단을 위한 정보 제공 서비스이며, 특정 종목 매수/매도를 권유하지 않습니다.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>

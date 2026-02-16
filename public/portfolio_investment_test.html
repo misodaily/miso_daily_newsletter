@@ -1,0 +1,1219 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>내 포트폴리오로 보는 투자 성향 테스트</title>
+  <meta name="description" content="8개 질문 + 실제 포트폴리오를 입력하면 포트폴리오 건강점수(0-100)와 8가지 투자 유형을 알려드립니다.">
+  <style>
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+
+    :root {
+      --bg: #faf7f2;
+      --surface: #fffdf8;
+      --ink: #1e2622;
+      --muted: #6a6058;
+      --line: #ddd5c9;
+      --accent: #e8721c;
+      --accent-light: #fff2e6;
+      --accent-hover: #cf6518;
+      --accent-2: #cf7a2a;
+      --accent-3: #7a4510;
+      --shadow: 0 18px 36px rgba(80, 40, 10, 0.10);
+      --green: #2d9a5c;
+      --yellow: #d4a017;
+      --red: #c0392b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 10%, #fde4c8 0%, transparent 24%),
+        radial-gradient(circle at 87% 0%, #fcebd6 0%, transparent 26%),
+        linear-gradient(130deg, #faf7f2 0%, #f8f3ec 45%, #faf7f2 100%);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      width: min(860px, 92vw);
+      margin: 36px auto 56px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(145deg, #d4650f, #e8841c);
+      color: #fff;
+      border-radius: 28px;
+      padding: 30px 30px 26px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -45px;
+      top: -35px;
+      width: 180px;
+      height: 180px;
+      background: linear-gradient(165deg, rgba(255, 220, 160, 0.35), rgba(255, 220, 160, 0));
+      border-radius: 50%;
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      opacity: 0.84;
+      margin: 0 0 8px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Pretendard", sans-serif;
+      font-size: clamp(30px, 4.2vw, 42px);
+      line-height: 1.24;
+      font-weight: 800;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      font-size: 15px;
+      opacity: 0.92;
+      line-height: 1.6;
+    }
+
+    /* ── Card ── */
+    .card {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 10px 26px rgba(80, 40, 10, 0.06);
+      animation: fadeUp 0.7s ease 0.08s both;
+    }
+
+    /* ── Quiz ── */
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .q-count {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--accent-3);
+    }
+
+    .progress {
+      width: 210px;
+      height: 8px;
+      background: #efe6da;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress>span {
+      display: block;
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), #f5922e);
+      transition: width 260ms ease;
+    }
+
+    .question {
+      margin: 0 0 18px;
+      font-size: clamp(21px, 3vw, 28px);
+      line-height: 1.45;
+      letter-spacing: -0.02em;
+      font-family: "Pretendard", sans-serif;
+      font-weight: 800;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      padding: 15px 16px;
+      text-align: left;
+      font-size: 15px;
+      color: #3a2e22;
+      cursor: pointer;
+      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+      font-family: "Pretendard", sans-serif;
+    }
+
+    .option:hover {
+      transform: translateY(-1px);
+      border-color: #e0a060;
+      background: #fff8f0;
+    }
+
+    /* ── Portfolio Input ── */
+    .portfolio-section {
+      display: none;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .portfolio-section h2 {
+      font-family: "Pretendard", sans-serif;
+      font-weight: 800;
+      font-size: clamp(22px, 3vw, 28px);
+      margin-bottom: 6px;
+    }
+
+    .sub-desc {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .holding-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 40px;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+
+    .holding-row input,
+    .extra-input input {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-family: "Pretendard", sans-serif;
+      background: #fff;
+      color: var(--ink);
+      transition: border-color 160ms ease;
+      width: 100%;
+    }
+
+    .holding-row input:focus,
+    .extra-input input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .holding-row input::placeholder,
+    .extra-input input::placeholder {
+      color: #b8a89a;
+    }
+
+    .remove-btn {
+      width: 36px;
+      height: 36px;
+      border: 1px solid #e0d6cc;
+      border-radius: 10px;
+      background: #fff;
+      color: #a0887a;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 140ms ease, color 140ms ease;
+    }
+
+    .remove-btn:hover {
+      background: #fff0e6;
+      color: var(--accent);
+    }
+
+    /* ── Extra inputs (cash + trading) ── */
+    .extra-section {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .extra-section h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent-3);
+      margin-bottom: 14px;
+    }
+
+    .extra-input {
+      margin-bottom: 16px;
+    }
+
+    .extra-input label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .radio-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .radio-option {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: center;
+      font-size: 14px;
+      color: #3a2e22;
+      cursor: pointer;
+      transition: all 160ms ease;
+      background: #fff;
+      font-family: "Pretendard", sans-serif;
+    }
+
+    .radio-option:hover {
+      border-color: #e0a060;
+      background: #fff8f0;
+    }
+
+    .radio-option.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .radio-option input {
+      display: none;
+    }
+
+    .portfolio-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: "Pretendard", sans-serif;
+      transition: transform 100ms ease, opacity 100ms ease;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn.primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn.secondary {
+      background: #f0e8de;
+      color: #4a3520;
+    }
+
+    .btn.secondary:hover {
+      background: #e8ddd0;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ── Loading ── */
+    .loading-overlay {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #f0e6da;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    .loading-overlay p {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* ── Result ── */
+    .result {
+      display: none;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    /* Score Gauge */
+    .score-hero {
+      text-align: center;
+      padding: 28px 0 20px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 24px;
+    }
+
+    .score-hero .label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .gauge-wrap {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto 12px;
+    }
+
+    .gauge-wrap svg {
+      transform: rotate(-90deg);
+    }
+
+    .gauge-bg {
+      fill: none;
+      stroke: #f0e6da;
+      stroke-width: 10;
+    }
+
+    .gauge-fill {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 440;
+      stroke-dashoffset: 440;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .gauge-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--ink);
+      font-family: "Pretendard", sans-serif;
+    }
+
+    .gauge-text span {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .score-grade {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Type Card */
+    .type-card {
+      background: linear-gradient(135deg, #d4650f, #e8841c);
+      color: #fff;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .type-card::after {
+      content: "";
+      position: absolute;
+      right: -30px;
+      top: -20px;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(255, 220, 160, 0.3), transparent 70%);
+      border-radius: 50%;
+    }
+
+    .type-card .type-label {
+      font-size: 12px;
+      opacity: 0.8;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .type-card .type-name {
+      font-family: "Pretendard", sans-serif;
+      font-weight: 800;
+      font-size: clamp(24px, 3.5vw, 32px);
+      margin-bottom: 10px;
+    }
+
+    .type-card .type-oneliner {
+      font-size: 15px;
+      opacity: 0.92;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .type-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .type-tag {
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .type-tag.strength {
+      background: rgba(255, 255, 255, 0.18);
+      color: #c8e6c9;
+    }
+
+    .type-tag.caution {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffe0b2;
+    }
+
+    /* Score Breakdown */
+    .breakdown {
+      margin-bottom: 24px;
+    }
+
+    .breakdown-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-3);
+      letter-spacing: 0.04em;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .bd-row {
+      display: grid;
+      grid-template-columns: 110px 1fr 50px;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .bd-row strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .bd-track {
+      height: 10px;
+      background: #f0e8de;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bd-fill {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), #f5922e);
+      width: 0%;
+      transition: width 600ms ease;
+    }
+
+    /* Section Labels */
+    .section-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-3);
+      letter-spacing: 0.04em;
+      margin: 24px 0 12px;
+      text-transform: uppercase;
+    }
+
+    .mix {
+      display: grid;
+      gap: 9px;
+    }
+
+    .bar {
+      display: grid;
+      grid-template-columns: 120px 1fr 44px;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .bar-track {
+      height: 10px;
+      background: #f0e8de;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), #f5922e);
+      width: 0%;
+      transition: width 420ms ease;
+    }
+
+    /* Holdings Table */
+    .holdings-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .holdings-table th {
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 2px solid var(--line);
+      font-weight: 700;
+      color: var(--accent-3);
+      font-size: 12px;
+    }
+
+    .holdings-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f0ebe4;
+    }
+
+    .holdings-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Insight Cards */
+    .insight-block {
+      margin-top: 20px;
+    }
+
+    .insight-block h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent-3);
+      margin-bottom: 10px;
+    }
+
+    .insight-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .insight-list li {
+      padding: 10px 14px;
+      border: 1px solid #efe6da;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      line-height: 1.6;
+      background: #fffcf8;
+    }
+
+    .insight-list li::before {
+      margin-right: 8px;
+    }
+
+    .insight-list.summary li::before {
+      content: "📊";
+    }
+
+    .insight-list.flags li::before {
+      content: "⚠️";
+    }
+
+    .insight-list.checks li::before {
+      content: "✅";
+    }
+
+    .term-card {
+      border: 1px solid #efe6da;
+      border-radius: 14px;
+      padding: 16px;
+      background: var(--accent-light);
+      margin-top: 8px;
+    }
+
+    .term-card .tw {
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .term-card .td {
+      font-size: 14px;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    .term-card .tw-imp {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    /* Share Banner */
+    .share-banner {
+      margin-top: 24px;
+      border: 2px dashed var(--accent);
+      border-radius: 16px;
+      padding: 16px;
+      background: var(--accent-light);
+      text-align: center;
+    }
+
+    .share-banner .share-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent-3);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .actions {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #8a7a6e;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .wrap {
+        margin: 24px auto 32px;
+      }
+
+      .hero {
+        padding: 24px 22px 22px;
+        border-radius: 22px;
+      }
+
+      .card {
+        padding: 22px 18px;
+        border-radius: 20px;
+      }
+
+      .top-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .progress {
+        width: 100%;
+      }
+
+      .bar {
+        grid-template-columns: 95px 1fr 34px;
+        font-size: 13px;
+      }
+
+      .holding-row {
+        grid-template-columns: 1fr 1fr 36px;
+        gap: 8px;
+      }
+
+      .bd-row {
+        grid-template-columns: 90px 1fr 40px;
+      }
+
+      .radio-group {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <p class="eyebrow">MISO DAILY · SHARE TEST</p>
+      <h1>내 포트폴리오로 보는<br>투자 성향 테스트</h1>
+      <p>8개 질문 + 내 포트폴리오를 입력하면<br>건강점수(0-100)와 투자 유형을 바로 확인할 수 있습니다.</p>
+    </section>
+
+    <section class="card">
+      <!-- 퀴즈 -->
+      <div id="quiz">
+        <div class="top-row">
+          <div class="q-count" id="qCount">Q1 / 8</div>
+          <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+        </div>
+        <h2 class="question" id="question"></h2>
+        <div class="options" id="options"></div>
+      </div>
+
+      <!-- 포트폴리오 입력 -->
+      <div id="portfolio" class="portfolio-section">
+        <h2>내 포트폴리오 입력</h2>
+        <p class="sub-desc">보유 중인 종목의 티커와 투자 금액을 입력해 주세요.<br>예) AAPL, NVDA, 005930 (삼성전자)</p>
+        <div id="holdingsList">
+          <div class="holding-row">
+            <input type="text" placeholder="티커 (예: AAPL)" class="ticker-input">
+            <input type="number" placeholder="금액 (원)" class="amount-input">
+            <button class="remove-btn" onclick="removeRow(this)" title="삭제">×</button>
+          </div>
+          <div class="holding-row">
+            <input type="text" placeholder="티커 (예: 005930)" class="ticker-input">
+            <input type="number" placeholder="금액 (원)" class="amount-input">
+            <button class="remove-btn" onclick="removeRow(this)" title="삭제">×</button>
+          </div>
+          <div class="holding-row">
+            <input type="text" placeholder="티커 (예: NVDA)" class="ticker-input">
+            <input type="number" placeholder="금액 (원)" class="amount-input">
+            <button class="remove-btn" onclick="removeRow(this)" title="삭제">×</button>
+          </div>
+        </div>
+        <button class="btn secondary" onclick="addRow()" style="margin-top:8px">+ 종목 추가</button>
+
+        <!-- 현금 비중 + 매매 빈도 -->
+        <div class="extra-section">
+          <h3>추가 정보</h3>
+          <div class="extra-input">
+            <label>💰 전체 투자 자산 대비 현금(예수금) 비중</label>
+            <input type="number" id="cashInput" placeholder="예) 10 → 10%" min="0" max="100" style="max-width:200px">
+            <span style="font-size:13px;color:var(--muted);margin-left:4px">%</span>
+          </div>
+          <div class="extra-input">
+            <label>📈 평균 매매 빈도</label>
+            <div class="radio-group" id="freqGroup">
+              <label class="radio-option" onclick="selectFreq(this, 0)"><input type="radio" name="freq" value="0">거의
+                없음</label>
+              <label class="radio-option" onclick="selectFreq(this, 1)"><input type="radio" name="freq" value="1">월
+                1~2회</label>
+              <label class="radio-option" onclick="selectFreq(this, 2)"><input type="radio" name="freq" value="2">주
+                1~2회</label>
+              <label class="radio-option" onclick="selectFreq(this, 3)"><input type="radio" name="freq" value="3">거의
+                매일</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="portfolio-actions">
+          <button class="btn primary" id="analyzeBtn" onclick="submitPortfolio()">분석하기 →</button>
+        </div>
+      </div>
+
+      <!-- 로딩 -->
+      <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>포트폴리오를 분석하고 있습니다…<br>섹터 조회 및 AI 인사이트 생성 중</p>
+      </div>
+
+      <!-- 최종 결과 -->
+      <div id="result" class="result">
+        <!-- 건강점수 원형 게이지 -->
+        <div class="score-hero">
+          <div class="label">포트폴리오 건강점수</div>
+          <div class="gauge-wrap">
+            <svg viewBox="0 0 160 160" width="160" height="160">
+              <circle class="gauge-bg" cx="80" cy="80" r="70" />
+              <circle class="gauge-fill" id="gaugeFill" cx="80" cy="80" r="70" />
+            </svg>
+            <div class="gauge-text"><span id="scoreNum">0</span><span>점</span></div>
+          </div>
+          <div class="score-grade" id="scoreGrade">구조 기준: 분산 · 집중 · 현금 · 거래습관</div>
+        </div>
+
+        <!-- 투자 유형 카드 -->
+        <div class="type-card" id="typeCard">
+          <div class="type-label">당신의 투자 유형</div>
+          <div class="type-name" id="typeName"></div>
+          <div class="type-oneliner" id="typeOneliner"></div>
+          <div class="type-tags">
+            <span class="type-tag strength" id="typeStrength"></span>
+            <span class="type-tag caution" id="typeCaution"></span>
+          </div>
+        </div>
+
+        <!-- 점수 분해 -->
+        <div class="breakdown">
+          <div class="breakdown-title">📊 점수 구성</div>
+          <div class="bd-row"><strong>분산</strong><span class="bd-track"><span class="bd-fill"
+                id="bdDiv"></span></span><span id="bdDivTxt">0/35</span></div>
+          <div class="bd-row"><strong>집중 리스크</strong><span class="bd-track"><span class="bd-fill"
+                id="bdConc"></span></span><span id="bdConcTxt">0/30</span></div>
+          <div class="bd-row"><strong>유동성</strong><span class="bd-track"><span class="bd-fill"
+                id="bdLiq"></span></span><span id="bdLiqTxt">0/15</span></div>
+          <div class="bd-row"><strong>거래 습관</strong><span class="bd-track"><span class="bd-fill"
+                id="bdTrade"></span></span><span id="bdTradeTxt">0/20</span></div>
+        </div>
+
+        <!-- 보유 종목 -->
+        <div class="section-label">📋 보유 종목 분석</div>
+        <table class="holdings-table" id="holdingsTable">
+          <thead>
+            <tr>
+              <th>종목</th>
+              <th>티커</th>
+              <th>비중</th>
+              <th>섹터</th>
+            </tr>
+          </thead>
+          <tbody id="holdingsBody"></tbody>
+        </table>
+
+        <!-- 섹터 비중 -->
+        <div class="section-label">📊 섹터별 비중</div>
+        <div class="mix" id="sectorBars"></div>
+
+        <!-- AI 인사이트 -->
+        <div class="section-label">🤖 AI 인사이트</div>
+        <div class="insight-block" id="insightBlock"></div>
+
+        <!-- 공유 배너 -->
+        <div class="share-banner">
+          <div class="share-text" id="shareText"></div>
+          <div class="actions">
+            <button class="btn primary" id="shareBtn">결과 공유하기</button>
+            <button class="btn secondary" id="copyBtn">링크 복사</button>
+            <button class="btn secondary" id="restartBtn">다시 테스트</button>
+          </div>
+        </div>
+        <p class="footer-note" id="disclaimer">이 페이지는 참고용이며 투자 권유가 아닙니다.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_URL = "http://localhost:5001";
+
+    /* ━━━━━━━━━━━━━━━━━ 퀴즈 데이터 (A/B/C/D) ━━━━━━━━━━━━━━━━━ */
+    const questions = [
+      { q: "수익/변동성 관계에서 내가 더 편한 쪽은?", options: ["수익이 낮아도 변동이 작으면 좋다", "적당한 변동은 감수하고, 안정+성장을 같이 원한다", "변동이 크더라도 성장 가능성이 더 중요하다", "변동이 커도 상관없다. 큰 수익 기회를 더 우선한다"], keys: ["A", "B", "C", "D"] },
+      { q: "투자 판단에서 내가 가장 신뢰하는 근거는?", options: ["숫자/지표/리서치(근거가 명확한 것)", "숫자도 보되, 산업/제품 흐름도 같이 본다", "뉴스/이벤트/시장 분위기처럼 \"현재 흐름\"을 더 본다", "직감/스토리/트렌드(내러티브)가 더 크게 작동한다"], keys: ["A", "B", "C", "D"] },
+      { q: "종목을 고를 때 내 접근은?", options: ["검증된 큰 기업/대표 자산이 마음 편하다", "익숙한 영역에서 \"괜찮아 보이는 후보\"를 고른다", "성장 섹터에서 \"유망한 후보\"를 찾는다", "남들이 아직 덜 본 기회(신규/소형/테마)도 적극 찾는다"], keys: ["A", "B", "C", "D"] },
+      { q: "보유 기간(스타일)은 어느 쪽에 가깝나?", options: ["길게 들고 가는 편(년 단위)", "분기~반기 단위로 점검하며 들고 간다", "기회가 보이면 몇 주~몇 달 단위로 바꾼다", "흐름이 바뀌면 빠르게 대응한다(짧은 사이클)"], keys: ["A", "B", "C", "D"] },
+      { q: "내 매수 타이밍은 보통?", options: ["규칙적으로 나눠서 산다(루틴형)", "조건(가격/지표/뉴스)이 맞을 때 들어간다", "흐름이 좋아질 때 들어가는 편이다(추세 확인 후)", "이슈가 터질 때 과감히 들어가기도 한다(이벤트형)"], keys: ["A", "B", "C", "D"] },
+      { q: "수익이 났을 때 나는?", options: ["목표에 도달하면 일부라도 정리하는 게 편하다", "일부 정리 + 일부 유지(중간 조절)", "더 갈 것 같으면 길게 가져가고 싶다", "확신 있으면 오히려 비중을 더 싣기도 한다"], keys: ["A", "B", "C", "D"] },
+      { q: "손실이 났을 때 나는?", options: ["불편해서 줄이거나 정리하는 편", "다시 점검하고, 납득되면 유지한다", "확신이 있으면 오히려 분할로 더 산다", "반등/모멘텀을 보고 빠르게 판단해 갈아탄다"], keys: ["A", "B", "C", "D"] },
+      { q: "투자에서 내가 더 중요한 건?", options: ["예측 가능성과 마음의 안정", "장기적으로 꾸준히 목표 달성", "큰 기회를 잡는 성장성", "시장의 흐름을 읽고 빠르게 기회 포착"], keys: ["A", "B", "C", "D"] }
+    ];
+
+    /* ━━━━━━━━━━━━━━━━━ 10가지 페르소나 ━━━━━━━━━━━━━━━━━ */
+    const TYPES = {
+      "A+B": { name: "안정-관리형", one: "흔들림 줄이고, 꾸준히 관리하는 타입", strength: "🛡️ 스트레스 낮음, 루틴 유지 강함", point: "📉 '너무 보수적으로만' 기회가 줄 수 있음" },
+      "A+D": { name: "안정-기회형", one: "안정이 기본인데, 가끔 확실한 이슈엔 들어가는 타입", strength: "🎯 리스크 감각 좋고, 선택적 베팅", point: "⚡ '가끔'이 '자주'로 바뀌면 스타일 붕괴 가능" },
+      "A+C": { name: "안정-성장형", one: "마음은 안정, 관심은 성장에 있는 타입", strength: "⚖️ 급발진은 적고 성장도 포기 안 함", point: "🤔 성장/안정 사이에서 결정을 미루기 쉬움" },
+      "B+A": { name: "균형-안정형", one: "중간값을 잘 찾는 현실적인 타입", strength: "🧘 과열/공포에 덜 휘둘림", point: "😐 확신이 생겨도 '너무 중간'만 고수할 수 있음" },
+      "B+C": { name: "균형-성장형", one: "성장은 추구하되, 관리/조절이 있는 타입", strength: "💪 실행력+안정감의 균형", point: "😓 조절이 많아지면 의사결정 피로가 올 수 있음" },
+      "B+D": { name: "균형-기회형", one: "상황 맞춰 유연하게 움직이는 타입", strength: "🔄 환경 변화에 적응 빠름", point: "⚠️ 원칙이 흐려지면 '즉흥형'으로 변질 가능" },
+      "C+B": { name: "성장-관리형", one: "성장에 베팅하되, 루틴과 리스크를 챙기는 타입", strength: "📈 장기적으로 강한 조합(성장+관리)", point: "🔥 확신이 과해지면 '집중'이 과해질 수 있음" },
+      "C+D": { name: "성장-기회형", one: "성장 테마에서 기회가 보이면 빠르게 탄다", strength: "🚀 큰 사이클/트렌드 포착에 강함", point: "💸 매매 빈도가 높아지면 체력 소모↑" },
+      "D+B": { name: "기회-관리형", one: "기회를 찾되, 그래도 관리선은 지키는 타입", strength: "🎯 민첩함+제어력", point: "🌊 시장이 과열되면 관리선이 무너지기 쉬움" },
+      "D+C": { name: "기회-확신형", one: "확신이 서면 빠르게 크게 움직이는 타입", strength: "💥 강한 드라이브, 성과가 날 때 폭발력", point: "⚡ 리스크가 커지기 쉬우니 '스스로 납득 가능한 한도'가 중요" }
+    };
+
+    let current = 0, quizAnswers = [], selectedFreq = -1;
+
+    const qCount = document.getElementById("qCount");
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const progressBar = document.getElementById("progressBar");
+    const quizEl = document.getElementById("quiz");
+    const portfolioEl = document.getElementById("portfolio");
+    const loadingEl = document.getElementById("loading");
+    const resultEl = document.getElementById("result");
+
+    /* ━━━━━━━━━━━━━━━━━ 퀴즈 렌더 ━━━━━━━━━━━━━━━━━ */
+    function renderQuestion() {
+      const item = questions[current];
+      qCount.textContent = `Q${current + 1} / ${questions.length}`;
+      questionEl.textContent = item.q;
+      progressBar.style.width = `${(current / questions.length) * 100}%`;
+      optionsEl.innerHTML = "";
+      item.options.forEach((text, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "option"; btn.type = "button"; btn.textContent = text;
+        btn.addEventListener("click", () => {
+          quizAnswers.push(item.keys[idx]); current++;
+          if (current < questions.length) renderQuestion();
+          else showPortfolioInput();
+        });
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function showPortfolioInput() {
+      progressBar.style.width = "100%";
+      quizEl.style.display = "none";
+      portfolioEl.style.display = "block";
+    }
+
+    /* ━━━━━━━━━━━━━━━━━ 포트폴리오 입력 ━━━━━━━━━━━━━━━━━ */
+    function addRow() {
+      const list = document.getElementById("holdingsList");
+      const row = document.createElement("div");
+      row.className = "holding-row";
+      row.innerHTML = `
+        <input type="text" placeholder="티커 (예: TSLA)" class="ticker-input">
+        <input type="number" placeholder="금액 (원)" class="amount-input">
+        <button class="remove-btn" onclick="removeRow(this)" title="삭제">×</button>`;
+      list.appendChild(row);
+    }
+    function removeRow(btn) {
+      if (document.querySelectorAll(".holding-row").length > 1) btn.closest(".holding-row").remove();
+    }
+    function selectFreq(el, val) {
+      document.querySelectorAll("#freqGroup .radio-option").forEach(o => o.classList.remove("selected"));
+      el.classList.add("selected");
+      selectedFreq = val;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━ 건강점수 계산 ━━━━━━━━━━━━━━━━━ */
+    function calcHealthScore(holdings, sectorExposure, cashRatio, tradeFreq) {
+      const numStocks = holdings.length;
+      const numSectors = Object.keys(sectorExposure).length;
+      const top1Pct = holdings.length > 0 ? holdings[0].percentage : 0;
+
+      // 분산 점수 (35)
+      let stockPts = numStocks >= 10 ? 35 : numStocks >= 5 ? 25 : numStocks >= 2 ? 10 : 0;
+      let sectorPts = numSectors >= 4 ? 20 : numSectors >= 2 ? 10 : 0;
+      const divScore = Math.min(stockPts + sectorPts, 35);
+
+      // 집중 리스크 (30)
+      let concScore = top1Pct >= 70 ? 0 : top1Pct >= 40 ? 10 : top1Pct >= 20 ? 20 : 30;
+
+      // 유동성 (15)
+      let liqScore = cashRatio <= 3 ? 5 : cashRatio <= 10 ? 15 : cashRatio <= 25 ? 12 : 8;
+
+      // 거래 습관 (20)
+      const tradeMap = [20, 15, 8, 0]; // 거의없음, 월1-2, 주1-2, 매일
+      let tradeScore = tradeMap[tradeFreq] ?? 15;
+
+      return {
+        total: divScore + concScore + liqScore + tradeScore,
+        div: divScore, conc: concScore, liq: liqScore, trade: tradeScore,
+        _numStocks: numStocks, _numSectors: numSectors, _top1Pct: top1Pct,
+        _cashRatio: cashRatio, _tradeFreq: tradeFreq
+      };
+    }
+
+    /* ━━━━━━━━━━━━━━━━━ 페르소나 매핑 (A/B/C/D 카운트 기반) ━━━━━━━━━━━━━━━━━ */
+    function determineType(answers) {
+      const counts = { A: 0, B: 0, C: 0, D: 0 };
+      for (const a of answers) counts[a]++;
+
+      const priority = { D: 4, C: 3, B: 2, A: 1 };
+      const sorted = Object.keys(counts).sort((a, b) => {
+        if (counts[b] !== counts[a]) return counts[b] - counts[a];
+        return priority[b] - priority[a];
+      });
+
+      const key = `${sorted[0]}+${sorted[1]}`;
+      return TYPES[key] || TYPES["B+C"];
+    }
+
+    /* ━━━━━━━━━━━━━━━━━ 제출 → API ━━━━━━━━━━━━━━━━━ */
+    async function submitPortfolio() {
+      const tickers = document.querySelectorAll(".ticker-input");
+      const amounts = document.querySelectorAll(".amount-input");
+      const holdings = [];
+      tickers.forEach((el, i) => {
+        const t = el.value.trim(), a = parseFloat(amounts[i].value) || 0;
+        if (t && a > 0) holdings.push({ ticker: t, amount: a });
+      });
+
+      if (holdings.length === 0) return alert("최소 1개 이상의 종목과 금액을 입력해 주세요.");
+      const cashRatio = parseFloat(document.getElementById("cashInput").value) || 0;
+      if (selectedFreq < 0) return alert("매매 빈도를 선택해 주세요.");
+
+      portfolioEl.style.display = "none";
+      loadingEl.style.display = "block";
+
+      try {
+        const resp = await fetch(`${API_URL}/api/analyze`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            quizScore: quizTotal, quizType: "",
+            holdings, cashRatio, tradeFrequency: selectedFreq
+          }),
+        });
+        if (!resp.ok) { const err = await resp.json(); throw new Error(err.error || "서버 오류"); }
+        const data = await resp.json();
+        showFinalResult(data, cashRatio, selectedFreq);
+      } catch (e) {
+        loadingEl.style.display = "none"; portfolioEl.style.display = "block";
+        alert(`분석 실패: ${e.message}\n\nFlask 서버가 실행 중인지 확인해 주세요.\n(python3 app.py)`);
+      }
+    }
+
+    /* ━━━━━━━━━━━━━━━━━ 결과 렌더 ━━━━━━━━━━━━━━━━━ */
+    function showFinalResult(data, cashRatio, tradeFreq) {
+      loadingEl.style.display = "none";
+      resultEl.style.display = "block";
+
+      const hs = calcHealthScore(data.holdings || [], data.sectorExposure || {}, cashRatio, tradeFreq);
+      const type = determineType(quizAnswers);
+
+      // ── 게이지 애니메이션 ──
+      const circumference = 2 * Math.PI * 70; // ≈440
+      const offset = circumference - (hs.total / 100) * circumference;
+      const gaugeFill = document.getElementById("gaugeFill");
+      gaugeFill.style.strokeDasharray = circumference;
+      setTimeout(() => { gaugeFill.style.strokeDashoffset = offset; }, 100);
+
+      // 점수 색상
+      const scoreColor = hs.total >= 70 ? "#2d9a5c" : hs.total >= 40 ? "#d4a017" : "#c0392b";
+      gaugeFill.style.stroke = scoreColor;
+
+      document.getElementById("scoreNum").textContent = hs.total;
+
+      // ── 투자 유형 카드 ──
+      document.getElementById("typeName").textContent = type.name;
+      document.getElementById("typeOneliner").textContent = type.one;
+      document.getElementById("typeStrength").textContent = type.strength;
+      document.getElementById("typeCaution").textContent = type.point;
+
+      // ── 점수 분해 바 ──
+      setTimeout(() => {
+        document.getElementById("bdDiv").style.width = `${(hs.div / 35) * 100}%`;
+        document.getElementById("bdConc").style.width = `${(hs.conc / 30) * 100}%`;
+        document.getElementById("bdLiq").style.width = `${(hs.liq / 15) * 100}%`;
+        document.getElementById("bdTrade").style.width = `${(hs.trade / 20) * 100}%`;
+      }, 200);
+      document.getElementById("bdDivTxt").textContent = `${hs.div}/35`;
+      document.getElementById("bdConcTxt").textContent = `${hs.conc}/30`;
+      document.getElementById("bdLiqTxt").textContent = `${hs.liq}/15`;
+      document.getElementById("bdTradeTxt").textContent = `${hs.trade}/20`;
+
+      // ── 보유 종목 테이블 ──
+      const tbody = document.getElementById("holdingsBody");
+      tbody.innerHTML = "";
+      (data.holdings || []).forEach(h => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td><strong>${h.name || h.ticker}</strong></td><td>${h.ticker}</td><td>${h.percentage}%</td><td>${h.sector}</td>`;
+        tbody.appendChild(tr);
+      });
+
+      // ── 섹터 비중 ──
+      const sectorBars = document.getElementById("sectorBars");
+      sectorBars.innerHTML = "";
+      Object.entries(data.sectorExposure || {}).forEach(([label, value]) => {
+        const r = Math.round(value * 10) / 10;
+        const row = document.createElement("div"); row.className = "bar";
+        row.innerHTML = `<strong>${label}</strong><span class="bar-track"><span class="bar-fill" style="width:${r}%"></span></span><span>${r}%</span>`;
+        sectorBars.appendChild(row);
+      });
+
+      // ── AI 인사이트 ──
+      const insightBlock = document.getElementById("insightBlock");
+      insightBlock.innerHTML = "";
+      const insight = data.insight || {};
+      if (insight.summary_3lines?.length) {
+        insightBlock.innerHTML += `<h3>💡 요약</h3><ul class="insight-list summary">${insight.summary_3lines.map(s => `<li>${s}</li>`).join("")}</ul>`;
+      }
+      if (insight.red_flags?.length) {
+        insightBlock.innerHTML += `<h3>🚨 주의 사항</h3><ul class="insight-list flags">${insight.red_flags.map(s => `<li>${s}</li>`).join("")}</ul>`;
+      }
+      if (insight.checklist?.length) {
+        insightBlock.innerHTML += `<h3>📝 체크리스트</h3><ul class="insight-list checks">${insight.checklist.map(s => `<li>${s}</li>`).join("")}</ul>`;
+      }
+      if (insight.term?.word) {
+        insightBlock.innerHTML += `<h3>📖 알아두면 좋은 용어</h3><div class="term-card"><div class="tw">${insight.term.word}</div><div class="td">${insight.term.definition}</div><div class="tw-imp">${insight.term.why_important}</div></div>`;
+      }
+      if (insight.disclaimer) document.getElementById("disclaimer").textContent = insight.disclaimer;
+
+      // ── 공유 문구 ──
+      const shareMsg = `내 포트폴리오 ${hs.total}점 / ${type.name} 나옴ㅋㅋ 너도 해봐`;
+      document.getElementById("shareText").textContent = `"${shareMsg}"`;
+
+      // ── 공유 버튼 ──
+      document.getElementById("shareBtn").onclick = async () => {
+        const t = `[투자 성향 테스트] ${hs.total}점 · ${type.name}\n${type.one}\n${window.location.href}`;
+        if (navigator.share) { try { await navigator.share({ title: "포트폴리오 건강점수", text: t }); } catch (_) { } }
+        else copyText(t);
+      };
+      document.getElementById("copyBtn").onclick = () => copyText(`내 포트폴리오 ${hs.total}점 / ${type.name}\n${window.location.href}`);
+    }
+
+    /* ━━━━━━━━━━━━━━━━━ 유틸 ━━━━━━━━━━━━━━━━━ */
+    function resetTest() {
+      current = 0; quizTotal = 0; selectedFreq = -1;
+      resultEl.style.display = "none"; portfolioEl.style.display = "none";
+      loadingEl.style.display = "none"; quizEl.style.display = "block";
+      document.querySelectorAll("#freqGroup .radio-option").forEach(o => o.classList.remove("selected"));
+      document.getElementById("cashInput").value = "";
+      const list = document.getElementById("holdingsList");
+      list.innerHTML = `
+        <div class="holding-row"><input type="text" placeholder="티커 (예: AAPL)" class="ticker-input"><input type="number" placeholder="금액 (원)" class="amount-input"><button class="remove-btn" onclick="removeRow(this)" title="삭제">×</button></div>
+        <div class="holding-row"><input type="text" placeholder="티커 (예: 005930)" class="ticker-input"><input type="number" placeholder="금액 (원)" class="amount-input"><button class="remove-btn" onclick="removeRow(this)" title="삭제">×</button></div>
+        <div class="holding-row"><input type="text" placeholder="티커 (예: NVDA)" class="ticker-input"><input type="number" placeholder="금액 (원)" class="amount-input"><button class="remove-btn" onclick="removeRow(this)" title="삭제">×</button></div>`;
+      // reset gauge
+      document.getElementById("gaugeFill").style.strokeDashoffset = 440;
+      renderQuestion();
+    }
+    async function copyText(text) {
+      try { await navigator.clipboard.writeText(text); alert("복사되었습니다!"); } catch (_) { alert("복사에 실패했습니다."); }
+    }
+
+    document.getElementById("restartBtn").addEventListener("click", resetTest);
+    renderQuestion();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,47 @@
+name: Daily Newsletter Update
+
+on:
+  schedule:
+    # UTC 23:00 = KST 08:00 (월~금)
+    - cron: '0 23 * * 0-4'
+  workflow_dispatch:  # 수동 트리거 가능
+
+permissions:
+  contents: write
+
+jobs:
+  update-newsletter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Fetch yesterday's news
+        env:
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+        run: python scripts/fetch_news.py
+
+      - name: Verify links
+        run: python scripts/verify_links.py
+
+      - name: Generate newsletter HTML
+        run: python scripts/generate_newsletter.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/ data/
+          git diff --cached --quiet || {
+            git commit -m "chore: daily newsletter update $(date +%Y-%m-%d)"
+            git push
+          }
