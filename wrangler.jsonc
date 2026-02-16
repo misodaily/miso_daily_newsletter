@@ -3,5 +3,12 @@
   "compatibility_date": "2026-02-12",
   "assets": {
     "directory": "./public"
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "miso-daily-db",
+      "database_id": "YOUR_DATABASE_ID_HERE"
+    }
+  ]
 }
