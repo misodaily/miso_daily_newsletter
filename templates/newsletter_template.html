@@ -5,6 +5,38 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Miso Daily | 주식 카테고리 뉴스레터</title>
+    <style>
+        /* Mobile Optimization */
+        @media only screen and (max-width: 480px) {
+            .container {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .content-padding {
+                padding: 20px 18px !important;
+            }
+
+            .calendar-day {
+                font-size: 13px !important;
+            }
+
+            .calendar-date {
+                width: 30px !important;
+                height: 30px !important;
+                line-height: 30px !important;
+                font-size: 14px !important;
+            }
+
+            h1 {
+                font-size: 42px !important;
+            }
+
+            .subtitle {
+                font-size: 32px !important;
+            }
+        }
+    </style>
 </head>
 
 <body
@@ -13,10 +45,11 @@
         style="background:#ececec;padding:24px 0;">
         <tr>
             <td align="center">
-                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="680"
-                    style="width:680px;max-width:680px;background:#f7f7f7;border:1px solid #dddddd;border-radius:12px;overflow:hidden;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="container"
+                    style="max-width:680px;background:#f7f7f7;border:1px solid #dddddd;border-radius:12px;overflow:hidden;margin:0 auto;">
                     <tr>
-                        <td style="padding:26px 28px 18px 28px;text-align:center;background:#D35400;">
+                        <td class="content-padding"
+                            style="padding:26px 28px 18px 28px;text-align:center;background:#D35400;">
                             <p
                                 style="margin:0 0 10px 0;font-size:12px;color:#1a1a1a;font-weight:700;letter-spacing:0.6px;">
                                 MARKET
@@ -25,7 +58,7 @@
                                 style="margin:0;font-size:62px;line-height:1;font-weight:700;letter-spacing:6px;color:#111;font-family:Georgia,'Times New Roman',serif;">
                                 M I S O
                             </h1>
-                            <p
+                            <p class="subtitle"
                                 style="margin:8px 0 0 0;font-size:48px;line-height:1;color:#111;font-family:Georgia,'Times New Roman',serif;">
                                 daily</p>
                         </td>
@@ -33,11 +66,11 @@
 
                     <!-- 출석체크 -->
                     <tr>
-                        <td style="padding:12px 28px 8px 28px;">
+                        <td class="content-padding" style="padding:12px 28px 8px 28px;">
                             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
                                 style="background:#fff3eb;border:1px solid #ffd8bf;border-radius:10px;">
                                 <tr>
-                                    <td style="padding:12px;">
+                                    <td style="padding:16px 12px;">
                                         <table role="presentation" cellpadding="0" cellspacing="0" border="0"
                                             width="100%">
                                             <tr>
@@ -46,14 +79,14 @@
                                                         border="0" width="100%">
                                                         <tr>
                                                             {% for item in calendar_week %}
-                                                            <td style="width:20%; vertical-align: top; padding: 0 4px;">
+                                                            <td style="width:20%; vertical-align: top; padding: 0 2px;">
                                                                 <table role="presentation" cellspacing="0"
                                                                     cellpadding="0" border="0" width="100%">
                                                                     <tr>
                                                                         <td
-                                                                            style="text-align:center; padding-bottom:6px;">
-                                                                            <span
-                                                                                style="font-size:11px; color:#888; font-weight:600;">{{
+                                                                            style="text-align:center; padding-bottom:8px;">
+                                                                            <span class="calendar-day"
+                                                                                style="font-size:12px; color:#888; font-weight:600;">{{
                                                                                 item.day_name }}</span>
                                                                         </td>
                                                                     </tr>
@@ -62,41 +95,29 @@
                                                                             {% if item.is_today %}
                                                                             <!-- 오늘: 붉은 원 + 흰색 텍스트 -->
                                                                             <table role="presentation" cellspacing="0"
-                                                                                cellpadding="0" border="0" width="36"
-                                                                                style="width:36px;">
+                                                                                cellpadding="0" border="0"
+                                                                                class="calendar-date-container">
                                                                                 <tr>
-                                                                                    <td
-                                                                                        style="width:36px; height:36px; background-color:#ff3b30; border-radius:50%; text-align:center; vertical-align:middle;">
-                                                                                        <span
-                                                                                            style="display:block; font-size:16px; font-weight:700; color:#ffffff; line-height:36px;">{{
+                                                                                    <td class="calendar-date"
+                                                                                        style="width:34px; height:34px; background-color:#ff3b30; border-radius:50%; text-align:center; vertical-align:middle;">
+                                                                                        <span class="calendar-date-text"
+                                                                                            style="display:block; font-size:15px; font-weight:700; color:#ffffff; line-height:34px;">{{
                                                                                             item.date }}</span>
                                                                                     </td>
                                                                                 </tr>
                                                                             </table>
                                                                             {% else %}
                                                                             <!-- 다른 날짜: 평범한 텍스트 -->
-                                                                            <div
-                                                                                style="width:36px; height:36px; line-height:36px; text-align:center;">
-                                                                                <span
-                                                                                    style="font-size:16px; font-weight:600; color:#333;">{{
+                                                                            <div class="calendar-date"
+                                                                                style="width:34px; height:34px; line-height:34px; text-align:center;">
+                                                                                <span class="calendar-date-text"
+                                                                                    style="font-size:15px; font-weight:600; color:#333;">{{
                                                                                     item.date }}</span>
                                                                             </div>
                                                                             {% endif %}
                                                                         </td>
                                                                     </tr>
-                                                                    <tr>
-                                                                        <td style="text-align:center; padding-top:6px;">
-                                                                            {% if item.status == 'checked' %}
-                                                                            <span
-                                                                                style="display:inline-block; width:6px; height:6px; background-color:#30d158; border-radius:50%;"></span>
-                                                                            {% elif item.status == 'today' %}
-                                                                            <!-- 오늘은 날짜 강조로 충분하지만, 일관성을 위해 점을 찍을 수도 있음 (생략) -->
-                                                                            {% else %}
-                                                                            <span
-                                                                                style="display:inline-block; width:6px; height:6px; background-color:#e5e5e5; border-radius:50%;"></span>
-                                                                            {% endif %}
-                                                                        </td>
-                                                                    </tr>
+                                                                    <!-- 점 표시 제거 -->
                                                                 </table>
                                                             </td>
                                                             {% endfor %}
@@ -113,7 +134,7 @@
 
                     <!-- 날짜 및 헤드라인 -->
                     <tr>
-                        <td style="padding:8px 28px 4px 28px;">
+                        <td class="content-padding" style="padding:8px 28px 4px 28px;">
                             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
                                 style="background:#ffffff;border:1px solid #e5e5e5;border-radius:10px;">
                                 <tr>
@@ -133,7 +154,7 @@
 
                     <!-- 시장 브리핑 -->
                     <tr>
-                        <td style="padding:18px 28px 0 28px;">
+                        <td class="content-padding" style="padding:18px 28px 0 28px;">
                             <p
                                 style="margin:0 0 10px 0;display:inline-block;padding:6px 10px;background:#fff1e7;border:1px solid #ffd2b8;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:0.5px;color:#D35400;">
                                 시장 브리핑</p>
@@ -147,7 +168,7 @@
 
                     <!-- TODAY INSIGHT -->
                     <tr>
-                        <td style="padding:14px 28px 0 28px;">
+                        <td class="content-padding" style="padding:14px 28px 0 28px;">
                             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
                                 style="background:#ffffff;border:1px solid #ededed;border-left:4px solid #D35400;border-radius:10px;">
                                 <tr>
@@ -167,7 +188,8 @@
                     <!-- 뉴스 카테고리 -->
                     {% for cat in categories %}
                     <tr>
-                        <td style="padding:18px 28px {% if loop.last %}16px{% else %}0{% endif %} 28px;">
+                        <td class="content-padding"
+                            style="padding:18px 28px {% if loop.last %}16px{% else %}0{% endif %} 28px;">
                             <p
                                 style="margin:0 0 10px 0;display:inline-block;padding:6px 10px;background:#fff1e7;border:1px solid #ffd2b8;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:0.5px;color:#D35400;">
                                 {{ cat.label }}</p>
@@ -187,7 +209,7 @@
 
                     <!-- CTA + 면책 -->
                     <tr>
-                        <td style="padding:10px 28px 28px 28px;text-align:center;">
+                        <td class="content-padding" style="padding:10px 28px 28px 28px;text-align:center;">
                             <table role="presentation" cellpadding="0" cellspacing="0" border="0"
                                 style="margin:0 auto;">
                                 <tr>
