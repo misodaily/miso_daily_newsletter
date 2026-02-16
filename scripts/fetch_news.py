@@ -11,7 +11,8 @@ import json
 import os
 import re
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from urllib.parse import quote
 
 import requests
@@ -71,8 +72,16 @@ def clean_html(text: str) -> str:
 
 
 def extract_original_link(item: dict) -> str:
-    """원문 링크를 추출합니다. originallink가 있으면 우선, 없으면 link."""
-    return item.get("originallink") or item.get("link", "")
+    """링크를 추출합니다. 안정성을 위해 news.naver.com 링크를 우선합니다."""
+    link = item.get("link", "")
+    originallink = item.get("originallink", "")
+
+    # news.naver.com 링크가 있으면 가장 신뢰할 수 있음 (네이버 뉴스 판)
+    if "news.naver.com" in link:
+        return link
+    
+    # 없으면 언론사 원문 링크 사용
+    return originallink or link
 
 
 def is_yesterday(link: str, pub_date_str: str, yesterday: str) -> bool:
