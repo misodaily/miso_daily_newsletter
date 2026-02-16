@@ -26,8 +26,8 @@ jobs:
 
       - name: Fetch yesterday's news
         env:
-          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
-          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          X_NAVER_CLIENT_ID: ${{ secrets.X_NAVER_CLIENT_ID }}
+          X_NAVER_CLIENT_SECRET: ${{ secrets.X_NAVER_CLIENT_SECRET }}
         run: python scripts/fetch_news.py
 
       - name: Verify links

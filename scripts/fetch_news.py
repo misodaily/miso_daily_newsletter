@@ -144,11 +144,11 @@ def fetch_all(client_id: str, client_secret: str) -> dict:
 
 
 def main():
-    client_id = os.environ.get("NAVER_CLIENT_ID", "")
-    client_secret = os.environ.get("NAVER_CLIENT_SECRET", "")
+    client_id = os.environ.get("X_NAVER_CLIENT_ID", "")
+    client_secret = os.environ.get("X_NAVER_CLIENT_SECRET", "")
 
     if not client_id or not client_secret:
-        print("❌ NAVER_CLIENT_ID / NAVER_CLIENT_SECRET 환경변수가 설정되지 않았습니다.")
+        print("❌ X_NAVER_CLIENT_ID / X_NAVER_CLIENT_SECRET 환경변수가 설정되지 않았습니다.")
         sys.exit(1)
 
     data = fetch_all(client_id, client_secret)
