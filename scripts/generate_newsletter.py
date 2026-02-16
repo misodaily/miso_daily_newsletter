@@ -19,18 +19,32 @@ PUBLIC_DIR = os.path.join(BASE_DIR, "public")
 WEEKDAY_KR = ["월", "화", "수", "목", "금", "토", "일"]
 
 
-def get_attendance(today: datetime) -> list[dict]:
-    """오늘 요일 기준으로 출석체크 상태를 생성합니다.
-    월~금(0~4)이 대상이며, 오늘까지 ✅, 나머지 ⬜.
-    """
-    weekday = today.weekday()  # 0=월 ... 4=금
-    days = []
-    for i in range(5):  # 월~금
-        days.append({
-            "name": WEEKDAY_KR[i],
-            "checked": i <= weekday,
+def get_weekly_calendar(today: datetime) -> list:
+    """이번 주 월~금 날짜와 상태를 반환합니다."""
+    # 이번 주 월요일 계산
+    start_of_week = today - timedelta(days=today.weekday())
+    
+    calendar = []
+    weekday_kr = ["월", "화", "수", "목", "금"]
+    
+    for i, day_name in enumerate(weekday_kr):
+        current_day = start_of_week + timedelta(days=i)
+        is_today = (current_day.date() == today.date())
+        is_past = (current_day.date() < today.date())
+        
+        status = "future"
+        if is_past:
+            status = "checked"
+        elif is_today:
+            status = "today"
+            
+        calendar.append({
+            "day_name": day_name,     # 월, 화, 수...
+            "date": current_day.day,  # 16, 17, 18...
+            "is_today": is_today,
+            "status": status
         })
-    return days
+    return calendar
 
 
 def build_headline(categories: list[dict]) -> str:
@@ -88,7 +102,7 @@ def main():
     context = {
         "today_display": today.strftime("%Y년 %m월 %d일 ") + WEEKDAY_KR[today.weekday()] + "요일",
         "yesterday_display": yesterday.strftime("%Y.%m.%d"),
-        "attendance": get_attendance(today),
+        "calendar_week": get_weekly_calendar(today),
         "headline": build_headline(categories),
         "briefing_points": build_briefing_points(categories),
         "today_insight": build_insight(categories),
