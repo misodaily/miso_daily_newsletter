@@ -60,7 +60,7 @@ export default {
                         <div class="container">
                             <h1>${message}</h1>
                             <p>포트폴리오를 점검하고 더 안정적인 투자를 시작해보세요.</p>
-                            <a href="https://misodaily-portfolio.vercel.app/" class="btn" target="_blank">내 포트폴리오 점검하러가기</a>
+                            <a href="https://misodaily-portforlio.vercel.app/" class="btn" target="_blank">내 포트폴리오 점검하러가기</a>
                         </div>
                     </body>
                     </html>
