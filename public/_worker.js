@@ -11,8 +11,8 @@ export default {
                 const channel = formData.get("channel");
                 const marketingConsent = formData.get("marketing_consent") === "on";
 
-                if (!email) {
-                    return new Response("Email is required", { status: 400 });
+                if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    return new Response("Valid email is required", { status: 400 });
                 }
 
                 const supabaseUrl = env.SUPABASE_URL;
@@ -60,7 +60,7 @@ export default {
                         <div class="container">
                             <h1>${message}</h1>
                             <p>포트폴리오를 점검하고 더 안정적인 투자를 시작해보세요.</p>
-                            <a href="https://misodaily-portforlio.vercel.app/" class="btn" target="_blank">내 포트폴리오 점검하러가기</a>
+                            <a href="https://misodaily-portfolio.vercel.app/" class="btn" target="_blank">내 포트폴리오 점검하러가기</a>
                         </div>
                     </body>
                     </html>
@@ -79,10 +79,10 @@ export default {
                             headers: { "Content-Type": "text/html; charset=utf-8" },
                         });
                     }
-                    return new Response(`Database Error: ${errorText}`, { status: 500 });
+                    return new Response("구독 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.", { status: 500 });
                 }
             } catch (e) {
-                return new Response(`Error: ${e.message}`, { status: 500 });
+                return new Response("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.", { status: 500 });
             }
         }
 

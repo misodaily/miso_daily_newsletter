@@ -110,7 +110,7 @@ def main():
     }
 
     # ── HTML 생성 ──
-    env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=False)
+    env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=True)
     template = env.get_template("newsletter_template.html")
     html = template.render(**context)
 

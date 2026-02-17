@@ -100,8 +100,7 @@ def fetch_all(client_id: str, client_secret: str) -> dict:
 
     for cat in CATEGORIES:
         articles = []
-        seen_urls = set()
-        seen_links = set() # Changed from seen_urls to seen_links
+        seen_links = set()
 
         for query in cat["queries"]:
             try:
