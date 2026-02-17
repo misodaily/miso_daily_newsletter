@@ -46,6 +46,9 @@ jobs:
             git push
           }
 
+      - name: Install dependencies (npm)
+        run: npm install
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
