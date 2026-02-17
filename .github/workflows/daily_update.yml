@@ -46,13 +46,5 @@ jobs:
             git push
           }
 
-      - name: Install dependencies (npm)
-        run: npm install
-
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy public --project-name=misodailynewsletter --branch=main
-          packageManager: npm
+      # Cloudflare auto-build triggers on push (npx wrangler deploy)
+      # No explicit deploy step needed here
