@@ -36,7 +36,7 @@ jobs:
       - name: Generate newsletter HTML
         run: python scripts/generate_newsletter.py
 
-      - name: Commit and push
+      - name: Commit and push (Keep GitHub history)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -45,3 +45,10 @@ jobs:
             git commit -m "chore: daily newsletter update $(date +%Y-%m-%d)"
             git push
           }
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --branch main
