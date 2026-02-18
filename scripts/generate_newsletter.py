@@ -83,17 +83,15 @@ def main():
 
     yesterday_str = data.get("date", (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d"))
     yesterday = datetime.strptime(yesterday_str, "%Y-%m-%d")
-    today = yesterday + timedelta(days=1)
 
     categories = data.get("categories", [])
 
     # ── 템플릿 변수 구성 ──
-    # 오늘 날짜 (실행 시점 기준)
     now = datetime.now()
     context = {
         "today_display": now.strftime("%Y년 %m월 %d일 ") + WEEKDAY_KR[now.weekday()] + "요일",
         "yesterday_display": yesterday.strftime("%Y.%m.%d"),
-        "calendar_week": get_weekly_calendar(today),
+        "calendar_week": get_weekly_calendar(now),
         "headline": build_headline(categories),
         "briefing_points": build_briefing_points(categories),
         "categories": categories,
