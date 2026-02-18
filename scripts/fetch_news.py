@@ -73,8 +73,8 @@ def clean_html(text: str) -> str:
     return html.unescape(text)
 
 
-def is_recent(link: str, pub_date_str: str, days: int = 2) -> bool:
-    """기사가 최근 N일 이내인지 확인합니다."""
+def is_recent(link: str, pub_date_str: str, days: int = 3) -> bool:
+    """기사가 최근 N일(72시간) 이내인지 확인합니다."""
     # URL에 날짜 포함 여부 (어제 or 오늘 or 그제)
     today = datetime.now()
     for d in range(days + 1):
@@ -103,7 +103,7 @@ def is_recent(link: str, pub_date_str: str, days: int = 2) -> bool:
 def fetch_all(client_id: str, client_secret: str) -> dict:
     """모든 카테고리에 대해 뉴스를 수집합니다."""
     today_str = datetime.now().strftime("%Y-%m-%d")
-    print(f"[fetch_news] 수집 실행: {today_str} (최근 48시간 뉴스 검색)")
+    print(f"[fetch_news] 수집 실행: {today_str} (최근 72시간 뉴스 검색)")
 
     result = {"date": today_str, "categories": []}
 
