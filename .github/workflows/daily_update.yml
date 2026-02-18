@@ -46,5 +46,16 @@ jobs:
             git push
           }
 
-      # Cloudflare auto-build triggers on push (npx wrangler deploy)
-      # No explicit deploy step needed here
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          secrets: |
+            SUPABASE_URL
+            SUPABASE_KEY
+          packageManager: npm
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
