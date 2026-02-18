@@ -4,126 +4,75 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Miso Daily | 주식 카테고리 뉴스레터</title>
+    <title>Miso Daily | 경제 뉴스레터</title>
     <style>
-        /* Mobile Optimization */
         @media only screen and (max-width: 480px) {
-            .container {
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-
-            .content-padding {
-                padding: 20px 18px !important;
-            }
-
-            .calendar-day {
-                font-size: 13px !important;
-            }
-
-            .calendar-date {
-                width: 30px !important;
-                height: 30px !important;
-                line-height: 30px !important;
-                font-size: 14px !important;
-            }
-
-            h1 {
-                font-size: 42px !important;
-            }
-
-            .subtitle {
-                font-size: 32px !important;
-            }
+            .container { width: 100% !important; max-width: 100% !important; }
+            .content-padding { padding: 20px 18px !important; }
+            .calendar-date { width: 30px !important; height: 30px !important; line-height: 30px !important; font-size: 14px !important; }
+            h1 { font-size: 36px !important; }
         }
     </style>
 </head>
 
-<body
-    style="margin:0;padding:0;background:#ececec;font-family:'Apple SD Gothic Neo','Noto Sans KR',Arial,sans-serif;color:#1f1f1f;">
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
-        style="background:#ececec;padding:24px 0;">
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:'Apple SD Gothic Neo','Noto Sans KR',Arial,sans-serif;color:#1f1f1f;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f4f4f4;padding:20px 0;">
         <tr>
             <td align="center">
-                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="container"
-                    style="max-width:680px;background:#f7f7f7;border:1px solid #dddddd;border-radius:12px;overflow:hidden;margin:0 auto;">
+
+                <!-- 웹 버전 안내 -->
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:620px;margin:0 auto;">
                     <tr>
-                        <td class="content-padding"
-                            style="padding:26px 28px 18px 28px;text-align:center;background:#FF6600;">
-                            <p
-                                style="margin:0 0 10px 0;font-size:12px;color:#1a1a1a;font-weight:700;letter-spacing:0.6px;">
-                                MARKET
-                                LETTER</p>
-                            <h1
-                                style="margin:0;font-size:62px;line-height:1;font-weight:700;letter-spacing:6px;color:#111;font-family:Georgia,'Times New Roman',serif;">
-                                M I S O
+                        <td style="padding:0 0 12px 0;text-align:center;">
+                            <span style="font-size:12px;color:#999;">이메일이 잘 안보이시나요? </span>
+                            <a href="https://misodailynewsletter.pages.dev/" target="_blank" rel="noopener noreferrer" style="font-size:12px;color:#FF6600;text-decoration:underline;">웹에서 보기</a>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- 메인 컨테이너 -->
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="container" style="max-width:620px;background:#ffffff;border-radius:12px;overflow:hidden;margin:0 auto;">
+
+                    <!-- 헤더 -->
+                    <tr>
+                        <td style="padding:32px 28px 24px 28px;text-align:center;border-bottom:3px solid #FF6600;">
+                            <p style="margin:0 0 6px 0;font-size:11px;color:#999;font-weight:600;letter-spacing:1px;">MARKET LETTER</p>
+                            <h1 style="margin:0;font-size:44px;line-height:1;font-weight:700;letter-spacing:4px;color:#111;font-family:Georgia,'Times New Roman',serif;">
+                                MISO <span style="font-weight:400;font-style:italic;">daily</span>
                             </h1>
-                            <p class="subtitle"
-                                style="margin:8px 0 0 0;font-size:48px;line-height:1;color:#111;font-family:Georgia,'Times New Roman',serif;">
-                                daily</p>
                         </td>
                     </tr>
 
-                    <!-- 출석체크 -->
+                    <!-- 날짜 + 출석체크 -->
                     <tr>
-                        <td class="content-padding" style="padding:12px 28px 8px 28px;">
-                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
-                                style="background:#fff3eb;border:1px solid #ffd8bf;border-radius:10px;">
+                        <td class="content-padding" style="padding:24px 28px 16px 28px;">
+                            <p style="margin:0 0 4px 0;font-size:14px;font-weight:700;color:#111;">{{ today_display }}</p>
+                            <p style="margin:0 0 16px 0;font-size:12px;color:#888;">{{ yesterday_display }} 국내 주요 경제 뉴스 기준</p>
+
+                            <!-- 주간 캘린더 -->
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#faf7f5;border-radius:8px;">
                                 <tr>
-                                    <td style="padding:16px 12px;">
-                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0"
-                                            width="100%">
+                                    <td style="padding:14px 8px;">
+                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
                                             <tr>
-                                                <td>
-                                                    <table role="presentation" cellpadding="0" cellspacing="0"
-                                                        border="0" width="100%">
+                                                {% for item in calendar_week %}
+                                                <td style="width:20%;text-align:center;vertical-align:top;">
+                                                    <span style="font-size:11px;color:#aaa;font-weight:600;display:block;margin-bottom:6px;">{{ item.day_name }}</span>
+                                                    {% if item.is_today %}
+                                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto;">
                                                         <tr>
-                                                            {% for item in calendar_week %}
-                                                            <td style="width:20%; vertical-align: top; padding: 0 2px;">
-                                                                <table role="presentation" cellspacing="0"
-                                                                    cellpadding="0" border="0" width="100%">
-                                                                    <tr>
-                                                                        <td
-                                                                            style="text-align:center; padding-bottom:8px;">
-                                                                            <span class="calendar-day"
-                                                                                style="font-size:12px; color:#888; font-weight:600;">{{
-                                                                                item.day_name }}</span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td align="center">
-                                                                            {% if item.is_today %}
-                                                                            <!-- 오늘: 붉은 원 + 흰색 텍스트 -->
-                                                                            <table role="presentation" cellspacing="0"
-                                                                                cellpadding="0" border="0"
-                                                                                class="calendar-date-container">
-                                                                                <tr>
-                                                                                    <td class="calendar-date"
-                                                                                        style="width:34px; height:34px; background-color:#ff3b30; border-radius:50%; text-align:center; vertical-align:middle;">
-                                                                                        <span class="calendar-date-text"
-                                                                                            style="display:block; font-size:15px; font-weight:700; color:#ffffff; line-height:34px;">{{
-                                                                                            item.date }}</span>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            </table>
-                                                                            {% else %}
-                                                                            <!-- 다른 날짜: 평범한 텍스트 -->
-                                                                            <div class="calendar-date"
-                                                                                style="width:34px; height:34px; line-height:34px; text-align:center;">
-                                                                                <span class="calendar-date-text"
-                                                                                    style="font-size:15px; font-weight:600; color:#333;">{{
-                                                                                    item.date }}</span>
-                                                                            </div>
-                                                                            {% endif %}
-                                                                        </td>
-                                                                    </tr>
-                                                                    <!-- 점 표시 제거 -->
-                                                                </table>
+                                                            <td class="calendar-date" style="width:32px;height:32px;background:#FF6600;border-radius:50%;text-align:center;vertical-align:middle;">
+                                                                <span style="font-size:14px;font-weight:700;color:#fff;line-height:32px;">{{ item.date }}</span>
                                                             </td>
-                                                            {% endfor %}
                                                         </tr>
                                                     </table>
+                                                    {% elif item.status == 'checked' %}
+                                                    <span style="font-size:14px;font-weight:600;color:#FF6600;line-height:32px;">{{ item.date }}</span>
+                                                    {% else %}
+                                                    <span style="font-size:14px;font-weight:500;color:#ccc;line-height:32px;">{{ item.date }}</span>
+                                                    {% endif %}
                                                 </td>
+                                                {% endfor %}
                                             </tr>
                                         </table>
                                     </td>
@@ -132,89 +81,101 @@
                         </td>
                     </tr>
 
-                    <!-- 날짜 및 헤드라인 -->
+                    <!-- 시장 브리핑 -->
                     <tr>
-                        <td class="content-padding" style="padding:8px 28px 4px 28px;">
-                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
-                                style="background:#ffffff;border:1px solid #e5e5e5;border-radius:10px;">
+                        <td class="content-padding" style="padding:8px 28px 20px 28px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#fff8f3;border-left:3px solid #FF6600;border-radius:0 8px 8px 0;">
                                 <tr>
-                                    <td style="padding:16px 18px;">
-                                        <p style="margin:0 0 6px 0;font-size:13px;color:#666;">{{ today_display }}</p>
-                                        <p style="margin:0 0 6px 0;font-size:12px;color:#FF6600;font-weight:700;">소싱 기준:
-                                            {{ yesterday_display }}(어제) 국내
-                                            주요 경제 뉴스</p>
-                                        <p style="margin:0;font-size:16px;line-height:1.55;font-weight:700;color:#111;">
-                                            오늘의 핵심: <span style="color:#FF6600;">{{ headline }}</span>
-                                        </p>
+                                    <td style="padding:14px 16px;">
+                                        <p style="margin:0 0 8px 0;font-size:11px;font-weight:800;color:#FF6600;letter-spacing:0.5px;">TODAY BRIEFING</p>
+                                        {% for point in briefing_points %}
+                                        <p style="margin:0 0 4px 0;font-size:13px;line-height:1.6;color:#333;">{{ point }}</p>
+                                        {% endfor %}
                                     </td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
 
-                    <!-- 시장 브리핑 -->
+                    <!-- 구분선 -->
                     <tr>
-                        <td class="content-padding" style="padding:18px 28px 0 28px;">
-                            <p
-                                style="margin:0 0 10px 0;display:inline-block;padding:6px 10px;background:#fff1e7;border:1px solid #ffd2b8;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:0.5px;color:#FF6600;">
-                                시장 브리핑</p>
-                            <ul style="margin:0 0 0 16px;padding:0;font-size:14px;line-height:1.8;color:#222;">
-                                {% for point in briefing_points %}
-                                <li>{{ point }}</li>
-                                {% endfor %}
-                            </ul>
+                        <td style="padding:0 28px;">
+                            <hr style="border:0;border-top:1px solid #eee;margin:0;" />
                         </td>
                     </tr>
-
 
                     <!-- 뉴스 카테고리 -->
                     {% for cat in categories %}
                     <tr>
-                        <td class="content-padding"
-                            style="padding:18px 28px {% if loop.last %}16px{% else %}0{% endif %} 28px;">
-                            <p
-                                style="margin:0 0 10px 0;display:inline-block;padding:6px 10px;background:#fff1e7;border:1px solid #ffd2b8;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:0.5px;color:#FF6600;">
-                                {{ cat.label }}</p>
+                        <td class="content-padding" style="padding:20px 28px {% if loop.last %}12px{% else %}4px{% endif %} 28px;">
+                            <p style="margin:0 0 12px 0;font-size:13px;font-weight:800;color:#FF6600;letter-spacing:0.3px;">{{ cat.label }}</p>
                             {% if cat.articles %}
-                            <ul style="margin:0 0 0 16px;padding:0;font-size:14px;line-height:1.8;">
-                                {% for article in cat.articles %}
-                                <li><a href="{{ article.url }}" target="_blank" rel="noopener noreferrer"
-                                        style="color:#1f1f1f;text-decoration:underline;">{{ article.title }}</a></li>
-                                {% endfor %}
-                            </ul>
+                            {% for article in cat.articles %}
+                            <p style="margin:0 0 8px 0;font-size:14px;line-height:1.6;">
+                                <a href="{{ article.url }}" target="_blank" rel="noopener noreferrer" style="color:#222;text-decoration:none;border-bottom:1px solid #ddd;">{{ article.title }}</a>
+                            </p>
+                            {% endfor %}
                             {% else %}
-                            <p style="margin:0 0 0 16px;font-size:13px;color:#999;">해당 카테고리의 전일자 뉴스가 없습니다.</p>
+                            <p style="margin:0;font-size:13px;color:#bbb;">해당 카테고리의 전일자 뉴스가 없습니다.</p>
                             {% endif %}
                         </td>
                     </tr>
+                    {% if not loop.last %}
+                    <tr>
+                        <td style="padding:0 28px;">
+                            <hr style="border:0;border-top:1px solid #f0f0f0;margin:0;" />
+                        </td>
+                    </tr>
+                    {% endif %}
                     {% endfor %}
 
-                    <!-- CTA + 면책 -->
+                    <!-- 구분선 -->
                     <tr>
-                        <td class="content-padding" style="padding:10px 28px 28px 28px;text-align:center;">
-                            <table role="presentation" cellpadding="0" cellspacing="0" border="0"
-                                style="margin:0 auto;">
+                        <td style="padding:8px 28px 0 28px;">
+                            <hr style="border:0;border-top:1px solid #eee;margin:0;" />
+                        </td>
+                    </tr>
+
+                    <!-- 구독 추천 + CTA -->
+                    <tr>
+                        <td class="content-padding" style="padding:20px 28px 12px 28px;text-align:center;">
+                            <p style="margin:0 0 16px 0;font-size:13px;line-height:1.7;color:#666;">
+                                뉴스레터가 도움이 되셨다면<br/>친구나 동료에게 추천해주세요.
+                            </p>
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
                                 <tr>
-                                    <td style="text-align:center;">
-                                        <!-- 구독 버튼 -->
+                                    <td>
                                         <a href="subscribe_miso_daily.html" target="_blank" rel="noopener noreferrer"
-                                            style="display:inline-block;padding:12px 26px;margin:5px;background:#FF6600;border-radius:999px;font-size:14px;font-weight:700;color:#fff;text-decoration:none;">
+                                            style="display:inline-block;padding:12px 28px;margin:0 4px 8px 4px;background:#FF6600;border-radius:8px;font-size:14px;font-weight:700;color:#fff;text-decoration:none;">
                                             지금 구독하기
                                         </a>
-                                        <!-- 포트폴리오 버튼 -->
-                                        <a href="https://misodaily-portforlio.vercel.app/" target="_blank"
-                                            rel="noopener noreferrer"
-                                            style="display:inline-block;padding:12px 26px;margin:5px;background:#333333;border-radius:999px;font-size:14px;font-weight:700;color:#fff;text-decoration:none;">
+                                    </td>
+                                    <td>
+                                        <a href="https://misodaily-portforlio.vercel.app/" target="_blank" rel="noopener noreferrer"
+                                            style="display:inline-block;padding:12px 28px;margin:0 4px 8px 4px;background:#333;border-radius:8px;font-size:14px;font-weight:700;color:#fff;text-decoration:none;">
                                             내 포트폴리오 점검하기
                                         </a>
                                     </td>
                                 </tr>
                             </table>
-                            <p style="margin:14px 0 0 0;font-size:12px;color:#777;line-height:1.6;">
+                        </td>
+                    </tr>
+
+                    <!-- 푸터 -->
+                    <tr>
+                        <td style="padding:16px 28px 28px 28px;text-align:center;border-top:1px solid #eee;">
+                            <p style="margin:0 0 6px 0;font-size:11px;color:#bbb;line-height:1.7;">
                                 Miso Daily는 투자 판단을 위한 정보 제공 서비스이며, 특정 종목 매수/매도를 권유하지 않습니다.
+                            </p>
+                            <p style="margin:0 0 6px 0;font-size:11px;color:#bbb;">
+                                본 메일은 수신에 동의하신 분들께 발송됩니다.
+                            </p>
+                            <p style="margin:0;font-size:11px;color:#ccc;">
+                                &copy; 2025 Miso Daily. All rights reserved.
                             </p>
                         </td>
                     </tr>
+
                 </table>
             </td>
         </tr>
