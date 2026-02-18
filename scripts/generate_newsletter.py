@@ -10,7 +10,6 @@ import sys
 from datetime import datetime, timedelta
 
 from jinja2 import Environment, FileSystemLoader
-from openai import OpenAI
 
 BASE_DIR = os.path.join(os.path.dirname(__file__), "..")
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -72,61 +71,6 @@ def build_briefing_points(categories: list[dict]) -> list[str]:
     return points[:4]
 
 
-def build_insight(categories: list[dict]) -> str:
-    """OpenAI API를 사용하여 기사 제목 기반 시장 인사이트를 생성합니다."""
-    total = sum(len(c.get("articles", [])) for c in categories)
-    if total == 0:
-        return "전일자 뉴스를 수집하지 못했습니다. 직접 확인해 주세요."
-
-    api_key = os.environ.get("OPENAI_API_KEY", "")
-    if not api_key:
-        print("⚠ OPENAI_API_KEY 미설정 — 기본 인사이트 사용")
-        return _fallback_insight(categories)
-
-    # 기사 제목 수집
-    titles = []
-    for cat in categories:
-        label = cat.get("label", "")
-        for article in cat.get("articles", []):
-            titles.append(f"[{label}] {article.get('title', '')}")
-
-    prompt = (
-        "아래는 오늘의 한국 경제 뉴스 헤드라인입니다.\n\n"
-        + "\n".join(titles)
-        + "\n\n위 헤드라인을 바탕으로 개인 투자자가 오늘 주목해야 할 시장 흐름을 "
-        "2~3문장으로 간결하게 요약해 주세요. 특정 종목 매수/매도 권유 없이, "
-        "거시적 흐름과 산업 동향 중심으로 작성하세요."
-    )
-
-    try:
-        client = OpenAI(api_key=api_key)
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=200,
-            temperature=0.7,
-        )
-        insight = response.choices[0].message.content.strip()
-        print(f"✅ AI 인사이트 생성 완료 ({len(insight)}자)")
-        return insight
-    except Exception as e:
-        print(f"⚠ OpenAI API 호출 실패: {e} — 기본 인사이트 사용")
-        return _fallback_insight(categories)
-
-
-def _fallback_insight(categories: list[dict]) -> str:
-    """API 실패 시 기사 제목 기반 간단 요약을 반환합니다."""
-    points = []
-    for cat in categories:
-        articles = cat.get("articles", [])
-        if articles:
-            label = cat.get("label", "").split(" ", 1)[-1]
-            points.append(f"{label} 분야에서 '{articles[0]['title']}'")
-    if points:
-        return "오늘의 주요 흐름: " + ", ".join(points[:3]) + " 등이 주목됩니다."
-    return "전일자 주요 경제 뉴스를 바탕으로 시장 흐름을 점검하세요."
-
-
 def main():
     # ── 데이터 로드 ──
     verified_path = os.path.join(DATA_DIR, "verified_articles.json")
@@ -152,7 +96,6 @@ def main():
         "calendar_week": get_weekly_calendar(today),
         "headline": build_headline(categories),
         "briefing_points": build_briefing_points(categories),
-        "today_insight": build_insight(categories),
         "categories": categories,
     }
 
