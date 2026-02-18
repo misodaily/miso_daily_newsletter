@@ -71,19 +71,26 @@ def clean_html(text: str) -> str:
     return re.sub(r"<[^>]+>", "", text).strip()
 
 
-def is_yesterday(link: str, pub_date_str: str, yesterday: str) -> bool:
-    """기사가 전일자인지 확인합니다 (URL 패턴 + pubDate)."""
-    ymd = yesterday.replace("-", "")  # 20260216
-    y_dot = yesterday.replace("-", ".")  # 2026.02.16
+def is_recent(link: str, pub_date_str: str, days: int = 2) -> bool:
+    """기사가 최근 N일 이내인지 확인합니다."""
+    # URL에 날짜 포함 여부 (어제 or 오늘 or 그제)
+    today = datetime.now()
+    for d in range(days + 1):
+        past_date = today - timedelta(days=d)
+        ymd = past_date.strftime("%Y%m%d")
+        y_dot = past_date.strftime("%Y.%m.%d")
+        y_dash = past_date.strftime("%Y-%m-%d")
+        if ymd in link or y_dot in link or y_dash in link:
+            return True
 
-    # URL에 날짜 포함 여부
-    if ymd in link or y_dot in link or yesterday in link:
-        return True
-
-    # pubDate 파싱 (예: "Mon, 16 Feb 2026 09:00:00 +0900")
+    # pubDate 파싱
     try:
         pub_dt = datetime.strptime(pub_date_str.strip(), "%a, %d %b %Y %H:%M:%S %z")
-        if pub_dt.strftime("%Y-%m-%d") == yesterday:
+        # timezone aware comparison
+        now_aware = datetime.now(pub_dt.tzinfo)
+        diff = now_aware - pub_dt
+        # 미래 날짜는 허용 (시차 등으로 인해)하고, N일 이내인지 확인
+        if diff.days <= days:
             return True
     except (ValueError, TypeError):
         pass
@@ -93,10 +100,10 @@ def is_yesterday(link: str, pub_date_str: str, yesterday: str) -> bool:
 
 def fetch_all(client_id: str, client_secret: str) -> dict:
     """모든 카테고리에 대해 뉴스를 수집합니다."""
-    yesterday = get_yesterday()
-    print(f"[fetch_news] 수집 대상 날짜: {yesterday}")
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    print(f"[fetch_news] 수집 실행: {today_str} (최근 48시간 뉴스 검색)")
 
-    result = {"date": yesterday, "categories": []}
+    result = {"date": today_str, "categories": []}
 
     for cat in CATEGORIES:
         articles = []
@@ -122,9 +129,9 @@ def fetch_all(client_id: str, client_secret: str) -> dict:
                 if "news.naver.com" not in link:
                     continue
 
-                # 날짜 필터링 (전일자)
+                # 날짜 필터링 (최근 48시간 이내)
                 pub_date_str = item.get("pubDate", "")
-                if not is_yesterday(link, pub_date_str, yesterday): # Pass link to is_yesterday
+                if not is_recent(link, pub_date_str):
                     continue
                 
                 # 중복 제거
@@ -134,9 +141,7 @@ def fetch_all(client_id: str, client_secret: str) -> dict:
 
                 filtered_items.append({
                     "title": title,
-                    "url": link,  # news.naver.com 링크 (changed from 'link' to 'url' to match original structure)
-                    # "pubDate": pub_date_str, # Not needed in final articles list
-                    # "description": clean_html(item.get("description", "")) # Not needed in final articles list
+                    "url": link,  # news.naver.com 링크
                 })
             
             # Add filtered items to articles, respecting max_articles

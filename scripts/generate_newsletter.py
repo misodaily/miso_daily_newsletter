@@ -99,8 +99,10 @@ def main():
     categories = data.get("categories", [])
 
     # ── 템플릿 변수 구성 ──
+    # 오늘 날짜 (실행 시점 기준)
+    now = datetime.now()
     context = {
-        "today_display": today.strftime("%Y년 %m월 %d일 ") + WEEKDAY_KR[today.weekday()] + "요일",
+        "today_display": now.strftime("%Y년 %m월 %d일 ") + WEEKDAY_KR[now.weekday()] + "요일",
         "yesterday_display": yesterday.strftime("%Y.%m.%d"),
         "calendar_week": get_weekly_calendar(today),
         "headline": build_headline(categories),
