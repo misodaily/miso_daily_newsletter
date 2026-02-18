@@ -7,6 +7,7 @@ fetch_news.py — Naver News Search API를 사용하여 카테고리별 전일�
   NAVER_CLIENT_SECRET — Naver 개발자 Client Secret
 """
 
+import html
 import json
 import os
 import re
@@ -67,8 +68,9 @@ def search_naver_news(query: str, client_id: str, client_secret: str, display: i
 
 
 def clean_html(text: str) -> str:
-    """Naver API 응답의 HTML 태그(<b> 등)를 제거합니다."""
-    return re.sub(r"<[^>]+>", "", text).strip()
+    """Naver API 응답의 HTML 태그(<b> 등)와 HTML 엔티티(&quot; 등)를 제거합니다."""
+    text = re.sub(r"<[^>]+>", "", text).strip()
+    return html.unescape(text)
 
 
 def is_recent(link: str, pub_date_str: str, days: int = 2) -> bool:
