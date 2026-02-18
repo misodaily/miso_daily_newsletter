@@ -20,12 +20,11 @@ WEEKDAY_KR = ["월", "화", "수", "목", "금", "토", "일"]
 
 
 def get_weekly_calendar(today: datetime) -> list:
-    """이번 주 월~금 날짜와 상태를 반환합니다."""
-    # 이번 주 월요일 계산
+    """이번 주 월~일 날짜와 상태를 반환합니다."""
     start_of_week = today - timedelta(days=today.weekday())
-    
+
     calendar = []
-    weekday_kr = ["월", "화", "수", "목", "금"]
+    weekday_kr = ["월", "화", "수", "목", "금", "토", "일"]
     
     for i, day_name in enumerate(weekday_kr):
         current_day = start_of_week + timedelta(days=i)
