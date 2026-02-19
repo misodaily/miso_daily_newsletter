@@ -36,16 +36,6 @@ jobs:
       - name: Generate newsletter HTML
         run: python scripts/generate_newsletter.py
 
-      - name: Commit and push (Keep GitHub history)
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/
-          git diff --cached --quiet || {
-            git commit -m "chore: daily newsletter update $(date +%Y-%m-%d)"
-            git push
-          }
-
       - name: Install npm dependencies
         run: npm install
 
@@ -62,3 +52,13 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Commit and push (Keep GitHub history)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/
+          git diff --cached --quiet || {
+            git commit -m "chore: daily newsletter update $(date +%Y-%m-%d)"
+            git push
+          }
