@@ -12,6 +12,8 @@ permissions:
 jobs:
   update-newsletter:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Seoul
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
